@@ -64,7 +64,7 @@ export default async function Home({
     return (
         <div className="min-h-full flex flex-col">
 
-            <div className="flex-1 container py-8 max-w-5xl mx-auto">
+            <div className="flex-1 container py-8 max-w-[1600px] mx-auto px-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-3xl font-bold tracking-tight">Find your next role</h1>
                     <ScrapeButton />
@@ -73,16 +73,16 @@ export default async function Home({
                 <FilterBar />
 
                 <main className="flex-1">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-medium text-muted-foreground">
                             {total} {total === 1 ? 'Job' : 'Jobs'} Found
                             {resolvedSearchParams.worldwide === 'true' && <span className="text-primary text-sm font-normal ml-2">• Worldwide Only</span>}
                         </h2>
                     </div>
 
-                    <div className="flex flex-col gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {jobs.length === 0 ? (
-                            <div className="text-center py-20 text-muted">
+                            <div className="col-span-full text-center py-20 text-muted-foreground">
                                 <p>No jobs found. Try adjusting filters or refreshing.</p>
                             </div>
                         ) : (
