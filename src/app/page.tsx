@@ -2,8 +2,7 @@ import React from 'react';
 import dbConnect from '@/lib/db';
 import Job from '@/models/Job';
 import JobCard from '@/components/JobCard';
-import FilterSidebar from '@/components/FilterSidebar';
-import Header from '@/components/Header';
+import FilterBar from '@/components/FilterBar';
 import ScrapeButton from '@/components/ScrapeButton';
 
 export const dynamic = 'force-dynamic';
@@ -63,19 +62,22 @@ export default async function Home({
     const { jobs, total, page, totalPages } = await getJobs(resolvedSearchParams);
 
     return (
-        <div className="min-h-screen flex flex-col">
-            <Header />
+        <div className="min-h-full flex flex-col">
 
-            <div className="flex flex-col md:flex-row flex-1 container py-8 gap-8">
-                <FilterSidebar />
+            <div className="flex-1 container py-8 max-w-5xl mx-auto">
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-3xl font-bold tracking-tight">Find your next role</h1>
+                    <ScrapeButton />
+                </div>
+
+                <FilterBar />
 
                 <main className="flex-1">
-                    <div className="flex items-center justify-between mb-6">
-                        <h1 className="text-2xl font-bold">
-                            {total} Jobs Found
-                            {resolvedSearchParams.worldwide === 'true' && <span className="text-muted text-lg font-normal ml-2">(Worldwide)</span>}
-                        </h1>
-                        <ScrapeButton />
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-medium text-muted-foreground">
+                            {total} {total === 1 ? 'Job' : 'Jobs'} Found
+                            {resolvedSearchParams.worldwide === 'true' && <span className="text-primary text-sm font-normal ml-2">• Worldwide Only</span>}
+                        </h2>
                     </div>
 
                     <div className="flex flex-col gap-4">

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Header from '@/components/Header';
 import { Upload, FileText, CheckCircle, Download, AlertCircle } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -61,10 +60,9 @@ export default function ResumePage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
-            <Header />
+        <div className="min-h-full flex flex-col">
 
-            <main className="container py-12 max-w-3xl">
+            <main className="container py-12 max-w-3xl mx-auto">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold mb-4">AI Resume Customizer</h1>
                     <p className="text-muted text-lg">

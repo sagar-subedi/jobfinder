@@ -15,7 +15,7 @@ export default function JobCard({ job }: JobCardProps) {
     });
 
     return (
-        <div className="card flex flex-col gap-4 group relative overflow-hidden border border-white/5 bg-white/5 hover:bg-white/10 transition-all duration-300">
+        <div className="card flex flex-col gap-4 group relative overflow-hidden border border-white/10 bg-secondary/50 hover:bg-secondary/80 transition-all duration-300 shadow-sm">
             <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div className="flex justify-between items-start">
