@@ -1,66 +1,111 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import React from 'react';
+import dbConnect from '@/lib/db';
+import Job from '@/models/Job';
+import JobCard from '@/components/JobCard';
+import FilterSidebar from '@/components/FilterSidebar';
+import Header from '@/components/Header';
+import ScrapeButton from '@/components/ScrapeButton';
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+export const dynamic = 'force-dynamic';
+
+async function getJobs(searchParams: { [key: string]: string | string[] | undefined }) {
+    await dbConnect();
+
+    const query: any = {};
+
+    if (searchParams.q) {
+        const searchRegex = new RegExp(searchParams.q as string, 'i');
+        query.$or = [
+            { title: searchRegex },
+            { company: searchRegex },
+            { description: searchRegex },
+        ];
+    }
+
+    if (searchParams.worldwide === 'true') {
+        query.isWorldwide = true;
+    }
+
+    if (searchParams.skills) {
+        const skills = (searchParams.skills as string).split(',').map(s => s.trim());
+        // Simple regex match for skills in description or title if not explicitly tagged
+        // Or if we had a skills array in DB, we'd use $in. 
+        // Since our scrapers don't perfectly extract skills yet, we'll search description.
+        const skillRegex = new RegExp(skills.join('|'), 'i');
+        query.$or = [
+            ...(query.$or || []),
+            { description: skillRegex },
+            { title: skillRegex }
+        ];
+    }
+
+    // Pagination
+    const page = parseInt(searchParams.page as string || '1');
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const jobs = await Job.find(query)
+        .sort({ datePosted: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    const total = await Job.countDocuments(query);
+
+    return { jobs, total, page, totalPages: Math.ceil(total / limit) };
+}
+
+export default async function Home({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+    const resolvedSearchParams = await searchParams;
+    const { jobs, total, page, totalPages } = await getJobs(resolvedSearchParams);
+
+    return (
+        <div className="min-h-screen flex flex-col">
+            <Header />
+
+            <div className="flex flex-col md:flex-row flex-1 container py-8 gap-8">
+                <FilterSidebar />
+
+                <main className="flex-1">
+                    <div className="flex items-center justify-between mb-6">
+                        <h1 className="text-2xl font-bold">
+                            {total} Jobs Found
+                            {resolvedSearchParams.worldwide === 'true' && <span className="text-muted text-lg font-normal ml-2">(Worldwide)</span>}
+                        </h1>
+                        <ScrapeButton />
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                        {jobs.length === 0 ? (
+                            <div className="text-center py-20 text-muted">
+                                <p>No jobs found. Try adjusting filters or refreshing.</p>
+                            </div>
+                        ) : (
+                            jobs.map((job) => (
+                                <JobCard key={job._id.toString()} job={job} />
+                            ))
+                        )}
+                    </div>
+
+                    {/* Simple Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center gap-2 mt-8">
+                            {page > 1 && (
+                                <a href={`/?page=${page - 1}`} className="btn btn-secondary">Previous</a>
+                            )}
+                            <span className="flex items-center px-4 text-muted">
+                                Page {page} of {totalPages}
+                            </span>
+                            {page < totalPages && (
+                                <a href={`/?page=${page + 1}`} className="btn btn-secondary">Next</a>
+                            )}
+                        </div>
+                    )}
+                </main>
+            </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+    );
 }
