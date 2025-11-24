@@ -3,6 +3,7 @@ import Link from 'next/link';
 import dbConnect from '@/lib/db';
 import Job from '@/models/Job';
 import JobCard from '@/components/JobCard';
+import JobGrid from '@/components/JobGrid';
 import FilterBar from '@/components/FilterBar';
 import ScrapeButton from '@/components/ScrapeButton';
 
@@ -88,17 +89,7 @@ export default async function Home({
                         </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {jobs.length === 0 ? (
-                            <div className="col-span-full text-center py-20 text-muted-foreground">
-                                <p>No jobs found. Try adjusting filters or refreshing.</p>
-                            </div>
-                        ) : (
-                            jobs.map((job) => (
-                                <JobCard key={job._id.toString()} job={job} />
-                            ))
-                        )}
-                    </div>
+                    <JobGrid jobs={JSON.parse(JSON.stringify(jobs))} />
 
                     {/* Simple Pagination */}
                     {totalPages > 1 && (
