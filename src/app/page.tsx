@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import dbConnect from '@/lib/db';
 import Job from '@/models/Job';
 import JobCard from '@/components/JobCard';
@@ -36,6 +37,13 @@ async function getJobs(searchParams: { [key: string]: string | string[] | undefi
             { description: skillRegex },
             { title: skillRegex }
         ];
+    }
+
+    if (searchParams.sources) {
+        const sources = (searchParams.sources as string).split(',').filter(Boolean);
+        if (sources.length > 0) {
+            query.source = { $in: sources };
+        }
     }
 
     // Pagination
@@ -96,13 +104,23 @@ export default async function Home({
                     {totalPages > 1 && (
                         <div className="flex justify-center gap-2 mt-8">
                             {page > 1 && (
-                                <a href={`/?page=${page - 1}`} className="btn btn-secondary">Previous</a>
+                                <Link
+                                    href={`/?${new URLSearchParams({ ...Object.fromEntries(Object.entries(resolvedSearchParams).filter(([k]) => k !== 'page')), page: String(page - 1) }).toString()}`}
+                                    className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors text-sm font-medium"
+                                >
+                                    Previous
+                                </Link>
                             )}
-                            <span className="flex items-center px-4 text-muted">
+                            <span className="flex items-center px-4 text-muted-foreground text-sm">
                                 Page {page} of {totalPages}
                             </span>
                             {page < totalPages && (
-                                <a href={`/?page=${page + 1}`} className="btn btn-secondary">Next</a>
+                                <Link
+                                    href={`/?${new URLSearchParams({ ...Object.fromEntries(Object.entries(resolvedSearchParams).filter(([k]) => k !== 'page')), page: String(page + 1) }).toString()}`}
+                                    className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors text-sm font-medium"
+                                >
+                                    Next
+                                </Link>
                             )}
                         </div>
                     )}
