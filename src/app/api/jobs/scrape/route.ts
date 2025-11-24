@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Job from '@/models/Job';
+import { JobScraper } from '@/lib/scrapers/types';
 import { WeWorkRemotelyScraper } from '@/lib/scrapers/WeWorkRemotely';
 import { RemoteOKScraper } from '@/lib/scrapers/RemoteOK';
 import { RemotiveScraper } from '@/lib/scrapers/Remotive';
 import { JobspressoScraper } from '@/lib/scrapers/Jobspresso';
+import { WorkingNomadsScraper } from '@/lib/scrapers/WorkingNomads';
 
 export async function POST(request: Request) {
     try {
@@ -13,17 +15,18 @@ export async function POST(request: Request) {
 
         await dbConnect();
 
-        const allScrapers = [
+        const scrapers: JobScraper[] = [
             new WeWorkRemotelyScraper(),
             new RemoteOKScraper(),
             new RemotiveScraper(),
-            new JobspressoScraper()
+            new JobspressoScraper(),
+            new WorkingNomadsScraper()
         ];
 
         // Filter scrapers if sources are provided, otherwise use all
         const scrapersToRun = selectedSources.length > 0
-            ? allScrapers.filter(s => selectedSources.includes(s.name))
-            : allScrapers;
+            ? scrapers.filter(s => selectedSources.includes(s.name))
+            : scrapers;
 
         if (scrapersToRun.length === 0) {
             return NextResponse.json({ success: false, error: 'No valid sources selected' }, { status: 400 });
@@ -48,7 +51,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, message: `Scraped ${totalJobs} jobs successfully from ${scrapersToRun.map(s => s.name).join(', ')}` });
     } catch (error) {
-        console.error('Scraping error:', error);
+        console.error('Scraping failed:', error);
         return NextResponse.json({ success: false, error: 'Failed to scrape jobs' }, { status: 500 });
     }
 }

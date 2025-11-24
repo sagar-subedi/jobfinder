@@ -9,7 +9,8 @@ const AVAILABLE_SOURCES = [
     { id: 'We Work Remotely', label: 'We Work Remotely' },
     { id: 'RemoteOK', label: 'RemoteOK' },
     { id: 'Remotive', label: 'Remotive' },
-    { id: 'Jobspresso', label: 'Jobspresso' }
+    { id: 'Jobspresso', label: 'Jobspresso' },
+    { id: 'Working Nomads', label: 'Working Nomads' }
 ];
 
 export default function ScrapeButton() {

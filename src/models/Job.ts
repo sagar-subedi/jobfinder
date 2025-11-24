@@ -22,7 +22,7 @@ const JobSchema: Schema = new Schema({
     skills: [{ type: String }],
     location: { type: String, default: 'Remote' },
     isWorldwide: { type: Boolean, default: false },
-    datePosted: { type: Date, default: Date.now },
+    datePosted: { type: Date, default: Date.now, expires: '30d' },
 }, { timestamps: true });
 
 // Prevent recompilation of model in development
