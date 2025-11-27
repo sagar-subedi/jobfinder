@@ -73,7 +73,8 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: 'Missing job description' }, { status: 400 });
             }
 
-            const customizedContent = await customizeResume(content, jobDescription);
+            const profile = await getProfile();
+            const customizedContent = await customizeResume(content, jobDescription, profile);
             return NextResponse.json({ customizedContent });
         }
 

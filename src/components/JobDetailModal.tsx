@@ -33,14 +33,17 @@ export default function JobDetailModal({ job, isOpen, onClose }: JobDetailModalP
         try {
             const res = await fetch('/api/resume');
             const data = await res.json();
-            if (data.templates) {
+            console.log('Fetched templates:', data.templates);
+            if (data.templates && Array.isArray(data.templates)) {
                 setTemplates(data.templates);
                 if (data.templates.length > 0) {
-                    setSelectedTemplate(data.templates[0]._id);
+                    // Ensure we set the ID as a string
+                    setSelectedTemplate(String(data.templates[0]._id));
                 }
             }
         } catch (err) {
             console.error('Failed to fetch templates', err);
+            setError('Failed to load templates');
         }
     };
 
@@ -132,7 +135,7 @@ export default function JobDetailModal({ job, isOpen, onClose }: JobDetailModalP
                                             className="w-full bg-secondary/30 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-primary"
                                         >
                                             {templates.map(t => (
-                                                <option key={t._id} value={t._id}>{t.name}</option>
+                                                <option key={String(t._id)} value={String(t._id)}>{t.name}</option>
                                             ))}
                                         </select>
                                     </div>

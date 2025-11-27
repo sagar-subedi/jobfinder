@@ -9,9 +9,9 @@ import clsx from 'clsx';
 const navItems = [
     { name: 'Find Jobs', href: '/', icon: Briefcase },
     { name: 'Resume AI', href: '/resume', icon: FileText },
+    { name: 'My Profile', href: '/profile', icon: Settings },
     { name: 'Saved Jobs', href: '/saved', icon: Bookmark, dummy: true },
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, dummy: true },
-    { name: 'Settings', href: '/settings', icon: Settings, dummy: true },
 ];
 
 export default function AppSidebar() {
